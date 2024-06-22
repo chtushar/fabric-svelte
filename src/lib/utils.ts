@@ -6,8 +6,8 @@ import { MAX_ZOOM_STEP } from './constants';
  * @param event
  * @returns [deltaX, deltaY, deltaZ]
  */
-export const normalizeWheel = (event: WheelEvent | TouchEvent) => {
-	const { deltaX, deltaY } = getDelta(event);
+export const normalizeWheel = (event: WheelEvent) => {
+	const { deltaX, deltaY } = event;
 	let deltaZ = 0;
 
 	const signY = Math.sign(deltaY);
@@ -28,16 +28,4 @@ export const updateCSSVariables = ($c?: fabric.Canvas | null) => {
 	document.body.style.setProperty('--zoom', $c?.getZoom().toFixed(3) || '1');
 	document.body.style.setProperty('--posX', `${$c?.viewportTransform?.[4]}px`);
 	document.body.style.setProperty('--posY', `${$c?.viewportTransform?.[5]}px`);
-};
-
-export const getDelta = (event: WheelEvent | TouchEvent) => {
-	let deltaX = 0;
-	let deltaY = 0;
-
-	if (event instanceof TouchEvent) {
-	} else {
-		deltaX = event.deltaX;
-		deltaY = event.deltaY;
-	}
-	return { deltaX, deltaY };
 };

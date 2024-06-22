@@ -28,7 +28,7 @@
 
 	// Zoom function to handle zooming on the canvas and updating CSS variables
 	// to reflect the current zoom level using the block.svg background
-	const zoom = (e: fabric.IEvent<WheelEvent | TouchEvent>) => {
+	const zoom = (e: fabric.IEvent<WheelEvent>) => {
 		if (e.e.ctrlKey || e.e.metaKey) {
 			let zoom = $c?.getZoom() || 1;
 
@@ -38,11 +38,7 @@
 			zoom = zoom - delta * zoom;
 			zoom = Vec.clamp(zoom, 0.25, 2.5);
 
-			if (e.e instanceof TouchEvent) {
-				$c?.zoomToPoint({ x: e.e.touches[0].clientX, y: e.e.touches[0].clientY }, zoom);
-			} else {
-				$c?.zoomToPoint({ x: e.e.offsetX, y: e.e.offsetY }, zoom);
-			}
+			$c?.zoomToPoint({ x: e.e.offsetX, y: e.e.offsetY }, zoom);
 
 			updateCSSVariables($c);
 
@@ -52,7 +48,7 @@
 		}
 	};
 
-	const pan = (e: fabric.IEvent<WheelEvent | TouchEvent>) => {
+	const pan = (e: fabric.IEvent<WheelEvent>) => {
 		if (!e.e.metaKey && !e.e.ctrlKey) {
 			const [deltaX, deltaY] = normalizeWheel(e.e);
 			const del = Vec.mul([deltaX, deltaY], PAN_SENSITIVITY);
@@ -166,9 +162,7 @@
 						updateCSSVariables($c);
 					}
 				},
-				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {
-					console.log('touch:gesture', e);
-				}
+				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {}
 			});
 
 			$mounted = true;
