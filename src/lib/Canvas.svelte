@@ -128,7 +128,7 @@
 						if (last.x === 0 && last.y === 0) {
 							last = { x: e.self.x, y: e.self.y };
 						}
-						const del = Vec.mul(Vec.sub([e.self.x, e.self.y], [last.x, last.y]), PAN_SENSITIVITY);
+						const del = Vec.sub([e.self.x, e.self.y], [last.x, last.y]);
 
 						last = { x: e.self.x, y: e.self.y };
 
