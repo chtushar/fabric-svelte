@@ -52,7 +52,7 @@
 		}
 	};
 
-	const pan = (e: fabric.IEvent<WheelEvent>) => {
+	const pan = (e: fabric.IEvent<WheelEvent | TouchEvent>) => {
 		if (!e.e.metaKey && !e.e.ctrlKey) {
 			const [deltaX, deltaY] = normalizeWheel(e.e);
 			const del = Vec.mul([deltaX, deltaY], PAN_SENSITIVITY);
@@ -62,8 +62,10 @@
 			updateCSSVariables($c);
 
 			// Prevent default scroll behavior
-			e.e.preventDefault();
-			e.e.stopPropagation();
+			if (e.e instanceof WheelEvent) {
+				e.e.preventDefault();
+				e.e.stopPropagation();
+			}
 		}
 	};
 
@@ -71,7 +73,6 @@
 		if (typeof window !== 'undefined') {
 			$c = new fabric.Canvas(canvas, {
 				backgroundColor: 'transparent',
-				selection: false,
 				allowTouchScrolling: true,
 				enableRetinaScaling: true
 			});
@@ -80,17 +81,6 @@
 				zoom(e);
 				pan(e);
 			});
-
-			// @ts-expect-error
-			$c.on('touch:gesture', (e: fabric.IEvent<TouchEvent>) => {
-				if (e.e.touches && e.e.touches.length == 2) {
-					// Implement pinch-to-zoom
-					// e.self.scale is the scale factor
-					zoom(e);
-				}
-			});
-
-			$c.on('touch:drag', (e) => {});
 
 			$mounted = true;
 			window.addEventListener('resize', resize);

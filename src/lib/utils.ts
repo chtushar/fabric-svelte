@@ -35,8 +35,6 @@ export const getDelta = (event: WheelEvent | TouchEvent) => {
 	let deltaY = 0;
 
 	if (event instanceof TouchEvent) {
-		deltaX = event.changedTouches[0].clientX;
-		deltaY = event.changedTouches[0].clientY;
 	} else {
 		deltaX = event.deltaX;
 		deltaY = event.deltaY;
