@@ -28,7 +28,7 @@
 
 	// Zoom function to handle zooming on the canvas and updating CSS variables
 	// to reflect the current zoom level using the block.svg background
-	const zoom = (e: fabric.IEvent<WheelEvent>) => {
+	const zoom = (e: fabric.IEvent<WheelEvent | TouchEvent>) => {
 		if (e.e.ctrlKey || e.e.metaKey) {
 			let zoom = $c?.getZoom() || 1;
 
@@ -38,7 +38,11 @@
 			zoom = zoom - delta * zoom;
 			zoom = Vec.clamp(zoom, 0.25, 2.5);
 
-			$c?.zoomToPoint({ x: e.e.offsetX, y: e.e.offsetY }, zoom);
+			if (e.e instanceof TouchEvent) {
+				$c?.zoomToPoint({ x: e.e.touches[0].clientX, y: e.e.touches[0].clientY }, zoom);
+			} else {
+				$c?.zoomToPoint({ x: e.e.offsetX, y: e.e.offsetY }, zoom);
+			}
 
 			updateCSSVariables($c);
 
@@ -64,24 +68,35 @@
 	};
 
 	onMount(() => {
-		$c = new fabric.Canvas(canvas, {
-			backgroundColor: 'transparent'
-		});
+		if (typeof window !== 'undefined') {
+			$c = new fabric.Canvas(canvas, {
+				backgroundColor: 'transparent',
+				selection: false,
+				allowTouchScrolling: true,
+				enableRetinaScaling: true
+			});
 
-		$c.on('mouse:wheel', (e) => {
-			zoom(e);
-			pan(e);
-		});
+			$c.on('mouse:wheel', (e) => {
+				zoom(e);
+				pan(e);
+			});
 
-		$c.on('ontouchstart', (e) => {
-			zoom(e as fabric.IEvent<WheelEvent>);
-			pan(e as fabric.IEvent<WheelEvent>);
-		});
+			// @ts-expect-error
+			$c.on('touch:gesture', (e: fabric.IEvent<TouchEvent>) => {
+				if (e.e.touches && e.e.touches.length == 2) {
+					// Implement pinch-to-zoom
+					// e.self.scale is the scale factor
+					zoom(e);
+				}
+			});
 
-		$mounted = true;
-		window.addEventListener('resize', resize);
+			$c.on('touch:drag', (e) => {});
 
-		resize();
+			$mounted = true;
+			window.addEventListener('resize', resize);
+
+			resize();
+		}
 		return () => {
 			window.removeEventListener('resize', resize);
 		};

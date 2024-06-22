@@ -7,6 +7,8 @@ export type MemberCardOptions = fabric.IGroupOptions & {
 	member: Member;
 };
 
+// https://github.com/fabricjs/fabric.js/issues/8849
+
 class MemberCard extends fabric.Group {
 	public member?: Member;
 	private card: fabric.Rect;
@@ -120,7 +122,10 @@ class MemberCard extends fabric.Group {
 
 		this.on('mouseover', this._onMouseOver);
 		this.on('mouseout', this._onMouseOut);
-		this.on('mouseup', this._onMouseUp);
+		this.on('mouseup', this._onSelect);
+
+		// @ts-expect-error - FabricJS types are incorrect
+		this.on('touchend', this._onSelect);
 
 		this.set('member', member);
 	}
@@ -135,11 +140,22 @@ class MemberCard extends fabric.Group {
 		this.canvas?.renderAll();
 	}
 
-	private _onMouseUp(e: IEvent<MouseEvent>) {
+	private _onSelect(e: IEvent<MouseEvent | TouchEvent>) {
+		let offsetX, offsetY;
+		console.log(e.e instanceof TouchEvent);
+		if (e.e instanceof TouchEvent) {
+			const rect = this.canvas?.getElement().getBoundingClientRect();
+			const touch = e.e.touches[0] || e.e.changedTouches[0];
+
+			offsetX = touch.clientX - (rect?.left ?? 0);
+			offsetY = touch.clientY - (rect?.top ?? 0);
+		} else {
+			offsetX = e.e.offsetX;
+			offsetY = e.e.offsetY;
+		}
+
 		if (this.member?.url && !e.e.altKey) {
 			// Open only if the keyup event is triggered within the boundary of the card
-
-			const { offsetX, offsetY } = e.e;
 			const { top, left, width, height } = this.getBoundingRect();
 			if (offsetX >= left && offsetX <= left + width && offsetY >= top && offsetY <= top + height) {
 				window.open(this.member.url, '_blank');

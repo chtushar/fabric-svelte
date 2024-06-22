@@ -1,6 +1,6 @@
 import js from '@eslint/js';
 import ts from 'typescript-eslint';
-import svelte from 'eslint-plugin-svelte';
+import svelte, { rules } from 'eslint-plugin-svelte';
 import prettier from 'eslint-config-prettier';
 import globals from 'globals';
 
@@ -21,10 +21,19 @@ export default [
 	},
 	{
 		files: ['**/*.svelte'],
+		rules: {
+			'@typescript-eslint/ban-ts-comment': 'error'
+		},
 		languageOptions: {
 			parserOptions: {
 				parser: ts.parser
 			}
+		}
+	},
+	{
+		files: ['**/*.ts'],
+		rules: {
+			'@typescript-eslint/ban-ts-comment': 'error'
 		}
 	},
 	{
