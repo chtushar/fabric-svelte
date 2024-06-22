@@ -108,6 +108,7 @@
 			// 	touchStart = null;
 			// });
 
+			let last = { x: 0, y: 0 };
 			// @ts-ignore
 			$c.on({
 				'touch:drag': (
@@ -115,11 +116,23 @@
 						self: { x: number; y: number; start: { x: number; y: number } };
 					}
 				) => {
-					const start = e.self.start;
-					const del = Vec.mul(Vec.sub([e.self.x, e.self.y], [start.x, start.y]), PAN_SENSITIVITY);
+					if (e.e.touches.length === 1) {
+						// Implement panning on touch devices
+						if (last.x === 0 && last.y === 0) {
+							last = { x: e.self.x, y: e.self.y };
+						}
+						const del = Vec.mul(Vec.sub([e.self.x, e.self.y], [last.x, last.y]), PAN_SENSITIVITY);
 
-					$c?.relativePan(new fabric.Point(del[0], del[1]));
-					updateCSSVariables($c);
+						if (e.e instanceof TouchEvent) {
+							last = { x: e.self.x, y: e.self.y };
+						} else {
+							// Noticing the event on touchend is not an instance of TouchEvent
+							last = { x: 0, y: 0 };
+						}
+
+						$c?.relativePan(new fabric.Point(del[0], del[1]));
+						updateCSSVariables($c);
+					}
 				}
 			});
 
