@@ -73,6 +73,11 @@
 			pan(e);
 		});
 
+		$c.on('ontouchstart', (e) => {
+			zoom(e as fabric.IEvent<WheelEvent>);
+			pan(e as fabric.IEvent<WheelEvent>);
+		});
+
 		$mounted = true;
 		window.addEventListener('resize', resize);
 
