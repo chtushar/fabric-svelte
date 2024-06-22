@@ -51,8 +51,16 @@
 			$c.forEachObject((obj) => {
 				if (obj instanceof MemberCard) {
 					if (obj.member && filter(obj.member, query)) {
-						obj.set('left', ($c?.width || CARD_WIDTH) / 2 - CARD_WIDTH / 2);
-						obj.set('top', 128 + i * CARD_HEIGHT + i * 16);
+						obj.animate('left', ($c?.width || CARD_WIDTH) / 2 - CARD_WIDTH / 2, {
+							onChange: $c?.renderAll.bind($c),
+							duration: 200,
+							easing: fabric.util.ease.easeOutCubic
+						});
+						obj.animate('top', 128 + i * CARD_HEIGHT + i * 16, {
+							onChange: $c?.renderAll.bind($c),
+							duration: 200,
+							easing: fabric.util.ease.easeOutCubic
+						});
 						obj.set('visible', true);
 
 						i++;
@@ -62,11 +70,27 @@
 				}
 			});
 
-			// Reset zoom and pan when search query changes
-			$c.setZoom(1);
-			$c.setViewportTransform([1, 0, 0, 1, 0, 0]);
-
-			updateCSSVariables();
+			if (
+				$c.getZoom() !== 1 ||
+				$c?.viewportTransform?.[4] !== 0 ||
+				$c?.viewportTransform?.[5] !== 0
+			) {
+				// Reset zoom and pan when search query changes
+				fabric.util.animate({
+					startValue: $c.getZoom(),
+					endValue: 1,
+					duration: 200,
+					onChange: (value) => {
+						$c.setZoom(value);
+						$c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+						updateCSSVariables();
+					},
+					onComplete: () => {
+						$c?.renderAll();
+					},
+					easing: fabric.util.ease.easeOutCubic
+				});
+			}
 		}
 	}
 
