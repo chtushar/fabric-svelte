@@ -116,6 +116,13 @@
 						self: { x: number; y: number; start: { x: number; y: number } };
 					}
 				) => {
+					// Touchend
+					if (typeof e.e.touches === 'undefined') {
+						last = { x: 0, y: 0 };
+						return;
+					}
+
+					// Touchmove
 					if (e.e.touches.length === 1) {
 						// Implement panning on touch devices
 						if (last.x === 0 && last.y === 0) {
@@ -123,12 +130,7 @@
 						}
 						const del = Vec.mul(Vec.sub([e.self.x, e.self.y], [last.x, last.y]), PAN_SENSITIVITY);
 
-						if (e.e instanceof TouchEvent) {
-							last = { x: e.self.x, y: e.self.y };
-						} else {
-							// Noticing the event on touchend is not an instance of TouchEvent
-							last = { x: 0, y: 0 };
-						}
+						last = { x: e.self.x, y: e.self.y };
 
 						$c?.relativePan(new fabric.Point(del[0], del[1]));
 						updateCSSVariables($c);
