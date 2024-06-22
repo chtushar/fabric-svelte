@@ -1,3 +1,11 @@
+## Setup
+
+- Clone this repository
+- Make sure you've **Node v20** installed on your machine.
+- Create `.env.local` file in the root directory and set `GITHUB_PAT` environment variable. `GITHUB_PAT` is GitHub's "personal access token" which can be obtained from GitHub's settings.
+- In the root directory, run `npm install` command to install the dependencies.
+- Run `npm run dev` command to run dev server.
+
 ## TODO
 
 - [x] Setup Svelte
@@ -12,11 +20,11 @@
   - [x] Click should open the profile
   - [x] Alt + drag should drag the card
   - [x] Implement Hover
-- [ ] Make everything responsive
+- [x] Make everything responsive
 - [x] Zoom and Pan
-- [ ] Ctrl + S exports the card as images
-  - [ ] Show them in a sidebar as a vertical list
+- [x] Ctrl + S exports the card as images
+  - [x] Show them in a sidebar as a vertical list
 
 Bonus:
 
-- [ ] Smooth animations for delight
+- [x] Smooth animations for delight
