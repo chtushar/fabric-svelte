@@ -85,27 +85,42 @@
 
 			let touchStart: Array<number> | null = null;
 
-			// @ts-expect-error
-			$c.on('touchstart', (e: fabric.IEvent<TouchEvent>) => {
-				console.log('touchstart');
-				touchStart = [e.e.touches[0].clientX, e.e.touches[0].clientY];
-			});
+			// // @ts-expect-error
+			// $c.on('touchstart', (e: fabric.IEvent<TouchEvent>) => {
+			// 	console.log('touchstart');
+			// 	touchStart = [e.e.touches[0].clientX, e.e.touches[0].clientY];
+			// });
 
-			// @ts-expect-error
-			$c.on('touchmove', (e: fabric.IEvent<TouchEvent>) => {
-				if (touchStart) {
-					const touchEnd = [e.e.touches[0].clientX, e.e.touches[0].clientY];
-					const delta = Vec.sub([touchStart[0], touchStart[1]], [touchEnd[0], touchEnd[1]]);
+			// // @ts-expect-error
+			// $c.on('touchmove', (e: fabric.IEvent<TouchEvent>) => {
+			// 	if (touchStart) {
+			// 		const touchEnd = [e.e.touches[0].clientX, e.e.touches[0].clientY];
+			// 		const delta = Vec.sub([touchStart[0], touchStart[1]], [touchEnd[0], touchEnd[1]]);
 
-					$c?.relativePan(new fabric.Point(delta[0], delta[1]));
-					touchStart = touchEnd;
+			// 		$c?.relativePan(new fabric.Point(delta[0], delta[1]));
+			// 		touchStart = touchEnd;
 
+			// 		updateCSSVariables($c);
+			// 	}
+			// });
+
+			// $c.on('touchend', () => {
+			// 	touchStart = null;
+			// });
+
+			// @ts-ignore
+			$c.on({
+				'touch:drag': (
+					e: fabric.IEvent<TouchEvent> & {
+						self: { x: number; y: number; start: { x: number; y: number } };
+					}
+				) => {
+					const start = e.self.start;
+					const del = Vec.mul(Vec.sub([e.self.x, e.self.y], [start.x, start.y]), PAN_SENSITIVITY);
+
+					$c?.relativePan(new fabric.Point(del[0], del[1]));
 					updateCSSVariables($c);
 				}
-			});
-
-			$c.on('touchend', () => {
-				touchStart = null;
 			});
 
 			$mounted = true;
