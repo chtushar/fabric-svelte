@@ -143,15 +143,15 @@ class MemberCard extends fabric.Group {
 	private _onSelect(e: IEvent<MouseEvent | TouchEvent>) {
 		let offsetX, offsetY;
 		console.log(e);
-		if (e.e instanceof TouchEvent) {
+		if (e.e.type === 'touchend') {
 			const rect = this.canvas?.getElement().getBoundingClientRect();
-			const touch = e.e.touches[0] || e.e.changedTouches[0];
+			const touch = (e.e as TouchEvent).touches[0] || (e.e as TouchEvent).changedTouches[0];
 
 			offsetX = touch.clientX - (rect?.left ?? 0);
 			offsetY = touch.clientY - (rect?.top ?? 0);
 		} else {
-			offsetX = e.e.offsetX;
-			offsetY = e.e.offsetY;
+			offsetX = (e.e as MouseEvent).offsetX;
+			offsetY = (e.e as MouseEvent).offsetY;
 		}
 
 		if (this.member?.url && !e.e.altKey) {
