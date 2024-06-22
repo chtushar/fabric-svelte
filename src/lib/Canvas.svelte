@@ -83,8 +83,6 @@
 				pan(e);
 			});
 
-			let touchStart: Array<number> | null = null;
-
 			// // @ts-expect-error
 			// $c.on('touchstart', (e: fabric.IEvent<TouchEvent>) => {
 			// 	console.log('touchstart');
@@ -122,12 +120,18 @@
 						return;
 					}
 
+					///////////// Pan  /////////////
+					// Touchstart
+					if (
+						e.e.touches.length === 1 &&
+						e.self.x === e.self.start.x &&
+						e.self.y === e.self.start.y
+					) {
+						last = { x: e.self.x, y: e.self.y };
+					}
+
 					// Touchmove
 					if (e.e.touches.length === 1) {
-						// Implement panning on touch devices
-						if (last.x === 0 && last.y === 0) {
-							last = { x: e.self.x, y: e.self.y };
-						}
 						const del = Vec.sub([e.self.x, e.self.y], [last.x, last.y]);
 
 						last = { x: e.self.x, y: e.self.y };
@@ -135,6 +139,35 @@
 						$c?.relativePan(new fabric.Point(del[0], del[1]));
 						updateCSSVariables($c);
 					}
+					////////////////////////////////
+
+					///////////// Zoom  /////////////
+					// Touchstart
+					if (
+						e.e.touches.length === 2 &&
+						e.self.x === e.self.start.x &&
+						e.self.y === e.self.start.y
+					) {
+						last = { x: e.self.x, y: e.self.y };
+					}
+
+					// Touchmove
+					if (e.e.touches.length === 2) {
+						const dist = Vec.dist(
+							[e.e.touches[0].clientX, e.e.touches[0].clientY],
+							[e.e.touches[1].clientX, e.e.touches[1].clientY]
+						);
+
+						const zoom = dist / Vec.dist([last.x, last.y], [e.self.x, e.self.y]);
+
+						last = { x: e.self.x, y: e.self.y };
+
+						$c?.zoomToPoint({ x: e.self.x, y: e.self.y }, zoom);
+						updateCSSVariables($c);
+					}
+				},
+				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {
+					console.log('touch:gesture', e);
 				}
 			});
 
