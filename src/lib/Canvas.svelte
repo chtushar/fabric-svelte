@@ -80,32 +80,25 @@
 			});
 
 			let last = { x: 0, y: 0 };
+			let touchStart = { x: 0, y: 0, distance: 0 };
 			// @ts-ignore
 			$c.on({
 				'touch:drag': (
 					e: fabric.IEvent<TouchEvent> & {
-						self: { x: number; y: number; start: { x: number; y: number } };
+						self: { x: number; y: number; start: { x: number; y: number }; fingers: number };
 					}
 				) => {
 					console.log('drag', e);
-					// Touchend
-					if (typeof e.e.touches === 'undefined') {
+					if (typeof e.e.touches === 'undefined' || e.e.type === 'touchend') {
 						last = { x: 0, y: 0 };
 						return;
 					}
 
-					///////////// Pan  /////////////
-					// Touchstart
-					if (
-						e.e.touches.length === 1 &&
-						e.self.x === e.self.start.x &&
-						e.self.y === e.self.start.y
-					) {
+					if (e.e.type === 'touchstart') {
 						last = { x: e.self.x, y: e.self.y };
 					}
 
-					// Touchmove
-					if (e.e.touches.length === 1) {
+					if (e.e.type === 'touchmove' && e.self.fingers === 1) {
 						const del = Vec.sub([e.self.x, e.self.y], [last.x, last.y]);
 
 						last = { x: e.self.x, y: e.self.y };
@@ -113,35 +106,45 @@
 						$c?.relativePan(new fabric.Point(del[0], del[1]));
 						updateCSSVariables($c);
 					}
-					////////////////////////////////
-
 					///////////// Zoom  /////////////
+					/**
+					 * @reference https://apex.oracle.com/pls/apex/vmorneau/r/pinch-and-zoom/pinch-and-zoom-js
+					 */
 					// Touchstart
-					if (
-						e.e.touches.length === 2 &&
-						e.self.x === e.self.start.x &&
-						e.self.y === e.self.start.y
-					) {
-						last = { x: e.self.x, y: e.self.y };
+					if (e.self.fingers === 2 && e.e.type === 'touchstart') {
+						e.e.preventDefault();
+						touchStart = {
+							x: (e.e.touches[0].pageX + e.e.touches[1].pageX) / 2,
+							y: (e.e.touches[0].pageY + e.e.touches[1].pageY) / 2,
+							distance: Vec.dist(
+								[e.e.touches[0].pageX, e.e.touches[0].pageY],
+								[e.e.touches[1].pageX, e.e.touches[1].pageY]
+							)
+						};
 					}
 
 					// Touchmove
-					if (e.e.touches.length === 2) {
-						const dist = Vec.dist(
-							[e.e.touches[0].clientX, e.e.touches[0].clientY],
-							[e.e.touches[1].clientX, e.e.touches[1].clientY]
-						);
+					if (e.self.fingers === 2 && e.e.type === 'touchmove') {
+						e.e.preventDefault();
 
-						const zoom = dist / Vec.dist([last.x, last.y], [e.self.x, e.self.y]);
+						let zoom = 1;
+						// @ts-expect-error - scale is available in safari
+						if (typeof e.e.scale === 'number') {
+							// @ts-expect-error - scale is available in safari
+							zoom = e.e.scale;
+						} else {
+							const dist = Vec.dist(
+								[e.e.touches[0].clientX, e.e.touches[0].clientY],
+								[e.e.touches[1].clientX, e.e.touches[1].clientY]
+							);
+							zoom = dist / touchStart.distance;
+						}
 
-						last = { x: e.self.x, y: e.self.y };
+						zoom = Vec.clamp(zoom, 0.25, 2.5);
 
 						$c?.zoomToPoint({ x: e.self.x, y: e.self.y }, zoom);
 						updateCSSVariables($c);
 					}
-				},
-				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {
-					console.log('gesture', e);
 				}
 			});
 
