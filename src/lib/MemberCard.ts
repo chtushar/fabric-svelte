@@ -7,8 +7,6 @@ export type MemberCardOptions = fabric.IGroupOptions & {
 	member: Member;
 };
 
-// https://github.com/fabricjs/fabric.js/issues/8849
-
 class MemberCard extends fabric.Group {
 	public member?: Member;
 	private card: fabric.Rect;

@@ -6,12 +6,15 @@
 	import type { Member } from '$lib/types';
 	import MemberCard from '$lib/MemberCard';
 	import { CARD_HEIGHT, CARD_WIDTH } from '$lib/constants';
+	import Hints from '$lib/Hints.svelte';
+	import ExportSideBar from '$lib/ExportSideBar.svelte';
 
 	let searchValue = '';
 
 	// Storing in store to avoid reactivity issues
 	const c = writable<fabric.Canvas | null>(null);
 	const members = writable<Array<MemberCard>>([]);
+	const exportImages = writable<Array<string>>([]);
 
 	// Function to filter members based on search query
 	function filter(member: Member, query: string) {
@@ -77,13 +80,16 @@
 		if ((event.metaKey || event.ctrlKey) && event.key === 's') {
 			$members.forEach((member) => {
 				if (member.visible) {
-					console.log(
-						member.toDataURL({
-							format: 'png',
-							quality: 1,
-							multiplier: 3
-						})
-					);
+					exportImages.update((images) => {
+						images.push(
+							member.toDataURL({
+								format: 'png',
+								quality: 1,
+								multiplier: 3
+							})
+						);
+						return images;
+					});
 				}
 			});
 		}
@@ -159,6 +165,8 @@
 		{#if c}
 			<Canvas {c} />
 		{/if}
+		<Hints />
+		<ExportSideBar {exportImages} />
 	</div>
 </main>
 
