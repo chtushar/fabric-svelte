@@ -74,12 +74,38 @@
 			$c = new fabric.Canvas(canvas, {
 				backgroundColor: 'transparent',
 				allowTouchScrolling: true,
-				enableRetinaScaling: true
+				enableRetinaScaling: true,
+				selection: false
 			});
 
 			$c.on('mouse:wheel', (e) => {
 				zoom(e);
 				pan(e);
+			});
+
+			let touchStart: Array<number> | null = null;
+
+			// @ts-expect-error
+			$c.on('touchstart', (e: fabric.IEvent<TouchEvent>) => {
+				console.log('touchstart');
+				touchStart = [e.e.touches[0].clientX, e.e.touches[0].clientY];
+			});
+
+			// @ts-expect-error
+			$c.on('touchmove', (e: fabric.IEvent<TouchEvent>) => {
+				if (touchStart) {
+					const touchEnd = [e.e.touches[0].clientX, e.e.touches[0].clientY];
+					const delta = Vec.sub([touchStart[0], touchStart[1]], [touchEnd[0], touchEnd[1]]);
+
+					$c?.relativePan(new fabric.Point(delta[0], delta[1]));
+					touchStart = touchEnd;
+
+					updateCSSVariables($c);
+				}
+			});
+
+			$c.on('touchend', () => {
+				touchStart = null;
 			});
 
 			$mounted = true;
