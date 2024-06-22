@@ -55,6 +55,7 @@
 		color: rgb(255, 125, 125);
 		background-color: transparent;
 		border: none;
+		user-select: none;
 	}
 
 	.exports-sidebar.show {

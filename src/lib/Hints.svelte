@@ -51,6 +51,13 @@
 		transition: opacity 0.2s cubic-bezier(0.01, 0.05, 0.16, 0.97);
 	}
 
+	@media (max-width: 500px) {
+		.hints {
+			right: 24px;
+			background-color: rgba(255, 255, 255, 1);
+		}
+	}
+
 	.hints ul {
 		padding: 0;
 		margin: 0;
@@ -69,5 +76,6 @@
 		font-size: 32px;
 		cursor: pointer;
 		color: rgb(255, 125, 125);
+		user-select: none;
 	}
 </style>
