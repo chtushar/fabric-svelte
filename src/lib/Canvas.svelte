@@ -79,29 +79,6 @@
 				pan(e);
 			});
 
-			// // @ts-expect-error
-			// $c.on('touchstart', (e: fabric.IEvent<TouchEvent>) => {
-			// 	console.log('touchstart');
-			// 	touchStart = [e.e.touches[0].clientX, e.e.touches[0].clientY];
-			// });
-
-			// // @ts-expect-error
-			// $c.on('touchmove', (e: fabric.IEvent<TouchEvent>) => {
-			// 	if (touchStart) {
-			// 		const touchEnd = [e.e.touches[0].clientX, e.e.touches[0].clientY];
-			// 		const delta = Vec.sub([touchStart[0], touchStart[1]], [touchEnd[0], touchEnd[1]]);
-
-			// 		$c?.relativePan(new fabric.Point(delta[0], delta[1]));
-			// 		touchStart = touchEnd;
-
-			// 		updateCSSVariables($c);
-			// 	}
-			// });
-
-			// $c.on('touchend', () => {
-			// 	touchStart = null;
-			// });
-
 			let last = { x: 0, y: 0 };
 			// @ts-ignore
 			$c.on({
@@ -110,6 +87,7 @@
 						self: { x: number; y: number; start: { x: number; y: number } };
 					}
 				) => {
+					console.log('drag', e);
 					// Touchend
 					if (typeof e.e.touches === 'undefined') {
 						last = { x: 0, y: 0 };
@@ -162,7 +140,9 @@
 						updateCSSVariables($c);
 					}
 				},
-				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {}
+				'touch:gesture': (e: fabric.IEvent<TouchEvent>) => {
+					console.log('gesture', e);
+				}
 			});
 
 			$mounted = true;
