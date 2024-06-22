@@ -145,11 +145,6 @@
 						$c?.zoomToPoint({ x: e.self.x, y: e.self.y }, zoom);
 						updateCSSVariables($c);
 					}
-
-					// Touchend
-					if (e.self.fingers === 0 && e.e.type === 'touchend') {
-						touchStart = { x: 0, y: 0, distance: 0 };
-					}
 				}
 			});
 
