@@ -142,7 +142,6 @@ class MemberCard extends fabric.Group {
 
 	private _onSelect(e: IEvent<MouseEvent | TouchEvent>) {
 		let offsetX, offsetY;
-		console.log(e);
 		if (e.e.type === 'touchend') {
 			const rect = this.canvas?.getElement().getBoundingClientRect();
 			const touch = (e.e as TouchEvent).touches[0] || (e.e as TouchEvent).changedTouches[0];
