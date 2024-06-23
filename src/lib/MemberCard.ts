@@ -23,7 +23,9 @@ class MemberCard extends fabric.Group {
 			ry: 12,
 			padding: CARD_PADDING,
 			hasControls: false,
-			hasBorders: true
+			hasBorders: true,
+			lockScalingX: true,
+			lockScalingY: true
 		});
 
 		const stitch = new fabric.Rect({
