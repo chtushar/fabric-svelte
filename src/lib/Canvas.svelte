@@ -94,7 +94,7 @@
 						return;
 					}
 
-					if (e.e.type === 'touchstart') {
+					if (e.e.type === 'touchstart' && e.self.fingers === 1) {
 						last = { x: e.self.x, y: e.self.y };
 					}
 
