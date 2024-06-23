@@ -128,9 +128,11 @@
 			if (e.e.altKey && e.e.buttons === 1) {
 				const card = e.target as MemberCard;
 
+				const zoom = $c?.getZoom() || 1;
+
 				$c?.setCursor('grabbing');
-				card.set('left', (card?.left || 0) + e.e.movementX);
-				card.set('top', (card?.top || 0) + e.e.movementY);
+				card.set('left', (card?.left || 0) + e.e.movementX / zoom);
+				card.set('top', (card?.top || 0) + e.e.movementY / zoom);
 			} else if (e.e.altKey) {
 				$c?.setCursor('grab');
 			} else {
